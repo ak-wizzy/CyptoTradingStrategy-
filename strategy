@@ -1,0 +1,52 @@
+//@version=6
+strategy("EMA Reversal Strategy with Confirmation (Neater)", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+
+// EMA Calculation
+ema200 = ta.ema(close, 200)
+ema55 = ta.ema(close, 55)
+
+// RSI
+rsi = ta.rsi(close, 14)
+
+// MACD
+[macdLine, signalLine, _] = ta.macd(close, 12, 26, 9)
+
+// Candlestick Reversal Patterns (Confirmation Only)
+isHammer = close > open and (high - low) > 3 * (close - open) and (low - math.min(open, close)) > 2 * (close - open)
+isEngulfingBullish = close > open and close > high[1] and open < low[1]
+isBullishReversal = isHammer or isEngulfingBullish
+
+isShootingStar = close < open and (high - low) > 3 * (open - close) and (math.max(open, close) - high) > 2 * (open - close)
+isEngulfingBearish = close < open and close < low[1] and open > high[1]
+isBearishReversal = isShootingStar or isEngulfingBearish
+
+// Entry Conditions
+entryLong = ta.crossover(ema55, ema200) and close > ema200 and isBullishReversal and rsi > 40 and macdLine > signalLine
+exitLong = ta.crossunder(ema55, ema200) and close < ema200
+
+entryShort = ta.crossunder(ema55, ema200) and close < ema200 and isBearishReversal and rsi < 60 and macdLine < signalLine
+exitShort = ta.crossover(ema55, ema200) and close > ema200
+
+// Entry/Exit Orders
+if entryLong
+    strategy.entry("Long", strategy.long, comment="Entry Long")
+
+if exitLong
+    strategy.close("Long", comment="Exit Long")
+
+if entryShort
+    strategy.entry("Short", strategy.short, comment="Entry Short")
+
+if exitShort
+    strategy.close("Short", comment="Exit Short")
+
+// Plot EMA and Indicators
+plot(ema200, color=color.blue, title="EMA 200")
+plot(ema55, color=color.orange, title="EMA 55")
+
+// Visual Markers for Entries and Exits
+plotshape(entryLong, style=shape.labelup, location=location.belowbar, color=color.green, size=size.small, title="Entry Long")
+plotshape(exitLong, style=shape.labeldown, location=location.abovebar, color=color.red, size=size.small, title="Exit Long")
+
+plotshape(entryShort, style=shape.labeldown, location=location.abovebar, color=color.red, size=size.small, title="Entry Short")
+plotshape(exitShort, style=shape.labelup, location=location.belowbar, color=color.green, size=size.small, title="Exit Short")
