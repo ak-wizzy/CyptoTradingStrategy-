@@ -1,5 +1,6 @@
 # CyptoTradingStrategy-
 Long &amp; Short Signal Strategy with trend reversal confirmation
+This is a Pine script that can be deployed as a TradingView Crypto strategy
 
 1.	Candlestick Reversal as Confirmation:
 o	Reversal patterns (isBullishReversal, isBearishReversal) are combined with EMA crossover and other conditions.
@@ -19,12 +20,10 @@ o	A short entry requires:
 
 5.	Exit Signals:
 o	Exits occur only on EMA crossovers back in the opposite direction, combined with price conditions.
-![image](https://github.com/user-attachments/assets/5dd0fa4d-68e1-43d3-a14c-63b1922268ac)
 
 •	The buy signal should occur only when the following conditions are met:
 1.	EMA 55 crossover EMA 200 (or price crosses EMA 200).
 2.	The reversal candlestick (Hammer or Engulfing) confirms the direction.
 3.	RSI and MACD provide additional validation.
 This prevents a buy signal from being triggered on every reversal candlestick.
-![image](https://github.com/user-attachments/assets/0953e313-2a11-4c97-8b88-f9845b7e8b0e)
 
